@@ -1,2 +1,2 @@
 # BrighterLog
-An automated timesheet app for Android devices. Uses Java Excel Library.
+An automated timesheet app for Android devices. Uses the Java Excel Library.
