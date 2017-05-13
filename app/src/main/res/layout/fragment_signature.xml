@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.brighterbrain.brighterlog.SignatureFragment">
+
+    <com.github.gcacace.signaturepad.views.SignaturePad
+        android:id="@+id/signaturePad"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:clearOnDoubleClick="true"
+        app:penColor="#000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/clearSignature"
+            style="@android:style/ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="Clear Signature"
+            android:textAllCaps="false"
+            android:textColor="#000" />
+
+        <Button
+            android:id="@+id/saveSignature"
+            style="@android:style/ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="Save Signature"
+            android:textAllCaps="false"
+            android:textColor="#000" />
+
+    </LinearLayout>
+
+</LinearLayout>
