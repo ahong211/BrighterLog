@@ -14,7 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:hint="Choose File Name"
+        android:hint="Enter TimeSheets Name"
         android:textColorHint="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.417"
@@ -29,27 +29,38 @@
         android:id="@+id/buttonToSaveExcel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="58dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:text="Save Excel"
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonToSendExcel"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextFromUser"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        tools:layout_constraintBaseline_creator="1"
+        tools:layout_constraintLeft_creator="1" />
 
     <Button
         android:id="@+id/buttonToReadExcel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:text="Read Excel"
-        tools:layout_constraintTop_creator="1"
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonToSendExcel"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBaseline_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+    <Button
+        android:id="@+id/buttonToSendExcel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="19dp"
+        android:layout_marginRight="19dp"
+        android:layout_marginTop="56dp"
+        android:text="Send Excel"
+        app:layout_constraintRight_toLeftOf="@+id/buttonToReadExcel"
+        app:layout_constraintTop_toBottomOf="@+id/editTextFromUser"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/buttonToSaveExcel"
-        android:layout_marginTop="31dp"
-        app:layout_constraintTop_toBottomOf="@+id/buttonToSaveExcel"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonToSaveExcel"/>
+        tools:layout_constraintTop_creator="1" />
 
 
 </android.support.constraint.ConstraintLayout>

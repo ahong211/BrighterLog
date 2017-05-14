@@ -1,6 +1,8 @@
 package com.brighterbrain.brighterlog;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +27,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-//import jxl.Workbook;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     EditText editTextFromUser;
     Button buttonToSaveExcel;
     Button buttonToReadExcel;
+    Button buttonToSendExcel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initializeObjects();
         buttonToSaveExcel.setOnClickListener(this);
         buttonToReadExcel.setOnClickListener(this);
+        buttonToSendExcel.setOnClickListener(this);
     }
 
     private void initializeObjects() {
         editTextFromUser = (EditText) findViewById(R.id.editTextFromUser);
         buttonToSaveExcel = (Button) findViewById(R.id.buttonToSaveExcel);
         buttonToReadExcel = (Button) findViewById(R.id.buttonToReadExcel);
+        buttonToSendExcel = (Button) findViewById(R.id.buttonToSendExcel);
     }
 
     @Override
@@ -59,6 +62,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String excelNameEditText = editTextFromUser.getText().toString();
             readExcelFile(getApplicationContext(), excelNameEditText + ".xls");
         }
+
+        if (view == buttonToSendExcel) {
+            String excelNameEditText = editTextFromUser.getText().toString();
+            sendExcelFile(excelNameEditText + ".xls");
+        }
+    }
+
+    private void sendExcelFile(String filename) {
+        File file = new File(getExternalCacheDir(), filename);
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("application/excel"); // List of all Mime types found from Google Search
+        //emailIntent.setType("application/x-excel");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"email@address.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Test Sending Excel File 1");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Check for Attachment");
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file.getAbsolutePath()));
+        startActivity(Intent.createChooser(emailIntent, "Send this Email via"));
     }
 
     private void saveToExcel() {
@@ -68,14 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         HSSFWorkbook workbook = new HSSFWorkbook();
         Sheet sheetOne;
         Row row;
-
-        /*
-         * .createCellStyle() is being problematic
-         */
-
-        //CellStyle cellStyleForHeaderRow = workbook.createCellStyle();
-        //cellStyleForHeaderRow.setFillForegroundColor(HSSFColor.LIME.index);
-        //cellStyleForHeaderRow.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
         sheetOne = workbook.createSheet("Weekly TimeSheet");
         row = sheetOne.createRow(0);
@@ -96,12 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             outputStream = new FileOutputStream(file);
             workbook.write(outputStream);
             Log.d(TAG, MainActivity.this.getFilesDir().getAbsolutePath());
-
             Toast.makeText(this, "Write Successful!", Toast.LENGTH_SHORT).show();
+
         } catch (IOException e) {
             Toast.makeText(this, "Error Writing to File", Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
             Toast.makeText(this, "Failed to save File", Toast.LENGTH_SHORT).show();
+
         } finally {
             try {
                 if (outputStream != null) {
@@ -164,17 +178,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sheetOne.setColumnWidth(5, (15 * 500));
     }
 
+    private void readExcelFile(Context context, String filename) {
 
-    private static void readExcelFile(Context context, String filename) {
-
-        if (!isExternalStorageAvailable() || isExternalStorageReadOnly())
-        {
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
             Log.e(TAG, "Storage not available or read only");
             return;
         }
 
-        try{
-            // Creating Input Stream
+        try {
+            // Create Input Stream
             File file = new File(context.getExternalCacheDir(), filename);
             FileInputStream myInput = new FileInputStream(file);
 
@@ -187,36 +199,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Get the first sheet from workbook
             HSSFSheet mySheet = myWorkBook.getSheetAt(0);
 
-            /** We now need something to iterate through the cells.**/
+            /* We now need something to iterate through the cells.*/
             Iterator rowIter = mySheet.rowIterator();
 
-            while(rowIter.hasNext()){
+            while (rowIter.hasNext()) {
                 HSSFRow myRow = (HSSFRow) rowIter.next();
                 Iterator cellIter = myRow.cellIterator();
-                while(cellIter.hasNext()){
+                while (cellIter.hasNext()) {
                     HSSFCell myCell = (HSSFCell) cellIter.next();
-                    Log.d(TAG, "Cell Value: " +  myCell.toString());
+                    Log.d(TAG, "Cell Value: " + myCell.toString());
                     Toast.makeText(context, "cell Value: " + myCell.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
-        }catch (Exception e){e.printStackTrace(); }
-
-        return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static boolean isExternalStorageReadOnly() {
+    public boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState);
     }
 
-    public static boolean isExternalStorageAvailable() {
+    public boolean isExternalStorageAvailable() {
         String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(extStorageState);
     }
 }
