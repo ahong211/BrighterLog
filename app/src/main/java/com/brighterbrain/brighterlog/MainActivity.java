@@ -60,12 +60,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view == buttonToReadExcel) {
             String excelNameEditText = editTextFromUser.getText().toString();
-            readExcelFile(getApplicationContext(), excelNameEditText + ".xls");
+            readExcelFile(getApplicationContext(), excelNameEditText + ".xlsx");
         }
 
         if (view == buttonToSendExcel) {
             String excelNameEditText = editTextFromUser.getText().toString();
-            sendExcelFile(excelNameEditText + ".xls");
+            sendExcelFile(excelNameEditText + ".xlsx");
         }
     }
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveToExcel() {
         String textFromUser = editTextFromUser.getText().toString();
-        String timeSheetNameFromUser = textFromUser + ".xls";
+        String timeSheetNameFromUser = textFromUser + ".xlsx";
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         Sheet sheetOne;
