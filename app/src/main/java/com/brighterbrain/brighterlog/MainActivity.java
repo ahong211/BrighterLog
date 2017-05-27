@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -54,36 +55,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view == buttonToSaveExcel) {
-            saveToExcel();
-        }
 
-        if (view == buttonToReadExcel) {
-            String excelNameEditText = editTextFromUser.getText().toString();
-            readExcelFile(getApplicationContext(), excelNameEditText + ".xlsx");
-        }
+        String excelNameEditText;
+        switch (view.getId()) {
+            case R.id.buttonToSaveExcel:
+                saveToExcel(view);
+                break;
 
-        if (view == buttonToSendExcel) {
-            String excelNameEditText = editTextFromUser.getText().toString();
-            sendExcelFile(excelNameEditText + ".xlsx");
+            case R.id.buttonToReadExcel:
+                excelNameEditText = editTextFromUser.getText().toString();
+                readExcelFile(getApplicationContext(), excelNameEditText + ".xls");
+                break;
+
+            case R.id.buttonToSendExcel:
+                excelNameEditText = editTextFromUser.getText().toString();
+                sendExcelFile(excelNameEditText + ".xls");
+                break;
         }
     }
 
     private void sendExcelFile(String filename) {
         File file = new File(getExternalCacheDir(), filename);
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("application/excel"); // List of all Mime types found from Google Search
-        //emailIntent.setType("application/x-excel");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"email@address.com"});
+        String emailAddress = ""; // TODO: Get email address from User.
+        emailIntent.setType("application/excel");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Test Sending Excel File 1");
         emailIntent.putExtra(Intent.EXTRA_TEXT, "Check for Attachment");
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file.getAbsolutePath()));
         startActivity(Intent.createChooser(emailIntent, "Send this Email via"));
     }
 
-    private void saveToExcel() {
+    private void saveToExcel(View view) {
         String textFromUser = editTextFromUser.getText().toString();
-        String timeSheetNameFromUser = textFromUser + ".xlsx";
+        String timeSheetNameFromUser = textFromUser + ".xls";
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         Sheet sheetOne;
@@ -108,13 +113,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             outputStream = new FileOutputStream(file);
             workbook.write(outputStream);
             Log.d(TAG, MainActivity.this.getFilesDir().getAbsolutePath());
-            Toast.makeText(this, "Write Successful!", Toast.LENGTH_SHORT).show();
+            hideKeyboard(view);
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
         } catch (IOException e) {
-            Toast.makeText(this, "Error Writing to File", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error Writing File", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
-            Toast.makeText(this, "Failed to save File", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error Saving File", Toast.LENGTH_SHORT).show();
 
         } finally {
             try {
@@ -125,6 +131,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Outputstream is not closed", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void createDayCell(Row row) { //, CellStyle cellStyleForHeaderRow) {
@@ -191,16 +202,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FileInputStream myInput = new FileInputStream(file);
 
             // Create a POIFSFileSystem object
-            POIFSFileSystem myFileSystem = new POIFSFileSystem(myInput);
+            POIFSFileSystem fileSystemObject = new POIFSFileSystem(myInput);
 
             // Create a workbook using the File System
-            HSSFWorkbook myWorkBook = new HSSFWorkbook(myFileSystem);
-
-            // Get the first sheet from workbook
-            HSSFSheet mySheet = myWorkBook.getSheetAt(0);
+            HSSFWorkbook myWorkBook = new HSSFWorkbook(fileSystemObject);
+            HSSFSheet firstSheetInWorkbook = myWorkBook.getSheetAt(0);
 
             /* We now need something to iterate through the cells.*/
-            Iterator rowIter = mySheet.rowIterator();
+            Iterator rowIter = firstSheetInWorkbook.rowIterator();
 
             while (rowIter.hasNext()) {
                 HSSFRow myRow = (HSSFRow) rowIter.next();
